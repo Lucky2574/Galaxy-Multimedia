@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Multimedia</title>
+   
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+   
+    <style>
+      
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0b0f2b, #1a1f4b);
+            margin: 0;
+           
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            color: #4af2fd;
+            text-shadow: 0 0 15px rgba(74, 242, 253, 0.5);
+            font-size: 2.5em;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #4af2fd, #2a5cff);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s;
+            border: 2px solid rgba(74, 242, 253, 0.3);
+            box-shadow: 0 0 15px rgba(74, 242, 253, 0.3);
+            cursor: pointer;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(74, 242, 253, 0.5);
+        }
+
+        .game-container {
+            position: relative;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        canvas {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(74, 242, 253, 0.2);
+        }
+
+        .game-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px 50px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            border: 2px solid #4af2fd;
+            z-index: 2;
+        }
+
+        .score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 1px solid #4af2fd;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            canvas {
+                width: 95%;
+                height: auto;
+            }
+            
+            .button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+        .content {
+    display: none;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #4af2fd;
+    border-radius: 15px;
+    margin: 20px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.content h2 {
+    color: #4af2fd;
+    margin-top: 0;
+}
+  
+        .video-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .video-item {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .video-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .video-player {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .video-info {
+            padding: 15px;
+        }
+
+        .video-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .audio-library {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .audio-track {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #4af2fd;
+            box-shadow: 0 0 15px rgba(74, 242, 253, 0.2);
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(74, 242, 253, 0.3);
+            border-radius: 2px;
+            margin: 10px 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: #4af2fd;
+            width: 0%;
+            transition: width 0.1s linear;
+            border-radius: 2px;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #4af2fd;
+        }
+
+          /* Ajouter ces styles dans la section CSS existante */
+    #bubble {
+        position: relative;
+        min-height: 80vh;
+    }
+    
+    .bubble-game {
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 800px;
+    }
+    
+    .bubble {
+        position: absolute;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .bubble:hover {
+        transform: scale(1.1);
+    }
+    
+    #gameArea {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        border: 2px solid #4af2fd;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    a {
+        text-decoration: none;
+        color: #fff;
+    }
+    </style>
+</head>
+<body>
+    <h1>Galaxy Multimedia</h1>
+    <div class="button-container">
+        <button class="button" onclick="showContent('animation')">🚀Galaxy catcher</button>
+        <button class="button" onclick="showContent('bubble')">🎮 Bublle</button>
+        <button class="button"><a href="brick.html">🎮 Brickout</a></button>
+        
+
+        <button class="button" onclick="showContent('video')">🎥 Vidéo</button>
+    </div>
+
+    <div class="game-container">
+        <div class="score-display">Score: <span id="scoreValue">0</span></div>
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <div class="game-overlay" id="gameOver">
+            <h2>Game Over!</h2>
+            <p>Score Final: <span id="finalScore">0</span></p>
+            <button class="button" onclick="restartGame()">Rejouer</button>
+        </div>
+    </div>
+    
+    
+   
+    <div id="video" class="content">
+        <h2>🎬 Galerie Vidéo</h2>
+        
+        <div class="video-gallery">
+            <!-- Vidéo 1 -->
+            <div class="video-item">
+                <video class="video-player" controls>
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-winding-road-through-a-forest-51035.mp4" type="video/mp4">
+                    Votre navigateur ne supporte pas les vidéos HTML5.
+                </video>
+                <div class="video-info">
+                    <h3>Forêt Mystique</h3>
+                    <p>Explorez les chemins secrets de la forêt enchantée</p>
+                    <div class="video-controls">
+                        <button class="button" onclick="playPause(this)">▶️ Lecture</button>
+                        <button class="button" onclick="toggleMute(this)">🔊 Son</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vidéo 2 -->
+            <div class="video-item">
+                <video class="video-player" controls loop>
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-galaxy-night-view-1186.mp4" type="video/mp4">
+                    Votre navigateur ne supporte pas les vidéos HTML5.
+                </video>
+                <div class="video-info">
+                    <h3>Voyage Spatial</h3>
+                    <p>Traversez les nébuleuses intergalactiques</p>
+                    <div class="video-controls">
+                        <button class="button" onclick="playPause(this)">▶️ Lecture</button>
+                        <button class="button" onclick="toggleFullscreen(this)">⛶ Plein écran</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="bubble" class="content">
+        <div class="bubble-game">
+            <h2>Bubble Pop!</h2>
+            <div class="score-display">Score: <span id="bubbleScore">0</span></div>
+            <div id="gameArea"></div>
+            <button class="button" onclick="startBubbleGame()">Nouvelle Partie</button>
+        </div>
+    </div>
+
+
+    <script>
+     
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        let spawnInterval;
+        let animationFrame;
+
+        const player = {
+            x: canvas.width / 2 - 30,
+            y: 550,
+            width: 60,
+            height: 60,
+            image: createPlayerShip()
+        };
+
+        let items = [];
+        let score = 0;
+        let gameOver = false;
+
+        function createPlayerShip() {
+            const ship = new Image();
+            ship.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAgMEw5NS43NiA0MEg3MEw1MCA2NS4yOCAzMCA0MEg0LjI0eiIgZmlsbD0iIzRhZjJmZCIvPjwvc3ZnPg==';
+            return ship;
+        }
+
+        function drawPlayer() {
+            ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
+        }
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x,
+                    y,
+                    size: Math.random() * 3 + 2,
+                    speedX: (Math.random() - 0.5) * 5,
+                    speedY: (Math.random() - 0.5) * 5,
+                    alpha: 1
+                });
+            }
+        }
+
+        function drawParticles() {
+            particles.forEach((p, index) => {
+                ctx.fillStyle = `rgba(74, 242, 253, ${p.alpha})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.alpha -= 0.02;
+
+                if (p.alpha <= 0) particles.splice(index, 1);
+            });
+        }
+
+        function spawnItem() {
+            items.push({
+                x: Math.random() * (canvas.width - 30),
+                y: 0,
+                width: 30,
+                height: 30,
+                speed: 3 + Math.random() * 3,
+                type: Math.random() > 0.9 ? 'powerup' : 'normal'
+            });
+        }
+
+        function updateGame() {
+            items.forEach(item => {
+                item.y += item.speed;
+                
+                // Vérifiez si l'objet est manqué
+                if (item.y > canvas.height) {
+                    gameOver = true; // Terminer le jeu si l'objet est manqué
+                }
+
+                if (item.y + item.height >= player.y &&
+                    item.x < player.x + player.width &&
+                    item.x + item.width > player.x) {
+                    score += item.type === 'powerup' ? 50 : 10;
+                    createParticles(item.x + 15, item.y + 15);
+                    item.y = canvas.height + 100;
+                    document.getElementById('scoreValue').textContent = score;
+                }
+            });
+
+            items = items.filter(item => item.y < canvas.height + 50);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Fond étoilé
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < 50; i++) {
+                ctx.fillRect(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    1, 1
+                );
+            }
+
+            drawPlayer();
+            drawParticles();
+            updateGame();
+
+            items.forEach(item => {
+                ctx.fillStyle = item.type === 'powerup' ? '#ffd700' : '#ff4d4d';
+                ctx.beginPath();
+                ctx.arc(item.x + 15, item.y + 15, 15, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            if (!gameOver) {
+                animationFrame = requestAnimationFrame(gameLoop);
+            } else {
+                document.getElementById('gameOver').style.display = 'block';
+                document.getElementById('finalScore').textContent = score;
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            player.x = e.clientX - rect.left - player.width / 2;
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+        });
+
+        function restartGame() {
+            cancelAnimationFrame(animationFrame);
+            clearInterval(spawnInterval);
+            
+            items = [];
+            particles = [];
+            score = 0;
+            gameOver = false;
+            player.x = canvas.width / 2 - 30;
+            
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('scoreValue').textContent = '0';
+            
+            spawnInterval = setInterval(spawnItem, 1000);
+            gameLoop();
+        }
+
+        function showContent(contentId) {
+    // Masquer tous les contenus et le jeu
+    document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
+    document.querySelector('.game-container').style.display = 'none';
+    
+    // Arrêter le jeu
+    cancelAnimationFrame(animationFrame);
+    clearInterval(spawnInterval);
+
+    if (contentId === 'animation') {
+        // Afficher le jeu
+        document.querySelector('.game-container').style.display = 'flex';
+        restartGame();
+    } else {
+        // Afficher le contenu sélectionné
+        document.getElementById(contentId).style.display = 'block';
+    }
+}
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            restartGame();
+        });
+
+        // Remplacer l'événement DOMContentLoaded existant par :
+document.addEventListener('DOMContentLoaded', () => {
+    showContent('animation'); // Affiche le jeu par défaut au chargement
+});
+ 
+
+        // Fonctions de contrôle vidéo
+        function playPause(btn) {
+            const video = btn.closest('.video-item').querySelector('video');
+            if(video.paused) {
+                video.play();
+                btn.textContent = '⏸ Pause';
+            } else {
+                video.pause();
+                btn.textContent = '▶️ Lecture';
+            }
+        }
+
+        function toggleMute(btn) {
+            const video = btn.closest('.video-item').querySelector('video');
+            video.muted = !video.muted;
+            btn.textContent = video.muted ? '🔇 Muet' : '🔊 Son';
+        }
+
+        function toggleFullscreen(btn) {
+            const videoContainer = btn.closest('.video-item');
+            if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen().catch(err => {
+                    alert(`Erreur plein écran: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Arrêter toutes les vidéos quand on quitte la section
+        document.querySelector('#video').addEventListener('hidden', () => {
+            document.querySelectorAll('#video video').forEach(v => v.pause());
+        });
+
+        //Contrôles audio
+        function togglePlay(btn) {
+            const audio = btn.closest('.audio-track').querySelector('audio');
+            const progress = btn.closest('.audio-track').querySelector('.progress');
+            
+            if(audio.paused) {
+                stopAllAudio();
+                audio.play();
+                btn.textContent = '⏸️';
+                audio.ontimeupdate = () => updateProgress(audio, progress);
+                audio.onloadedmetadata = () => initDuration(audio);
+            } else {
+                audio.pause();
+                btn.textContent = '▶️';
+            }
+        }
+
+        function updateVolume(slider) {
+            const audio = slider.closest('.audio-track').querySelector('audio');
+            audio.volume = slider.value;
+        }
+
+        function changeSpeed(speedElement) {
+            const audio = speedElement.closest('.audio-track').querySelector('audio');
+            const speeds = [0.5, 1, 1.5, 2];
+            const currentSpeed = parseFloat(audio.playbackRate);
+            const newSpeed = speeds[(speeds.indexOf(currentSpeed) + 1) % speeds.length];
+            
+            audio.playbackRate = newSpeed;
+            speedElement.textContent = `${newSpeed}x`;
+        }
+
+        function updateProgress(audio, progress) {
+            const percentage = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = `${percentage}%`;
+            
+            const timeDisplay = audio.closest('.audio-track').querySelector('.current-time');
+            timeDisplay.textContent = formatTime(audio.currentTime);
+        }
+
+        function initDuration(audio) {
+            const durationDisplay = audio.closest('.audio-track').querySelector('.duration');
+            durationDisplay.textContent = formatTime(audio.duration);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function stopAllAudio() {
+            document.querySelectorAll('audio').forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.closest('.audio-track').querySelector('button').textContent = '▶️';
+            });
+        }
+
+        // Arrêter l'audio quand on quitte la section
+        document.querySelector('#audio').addEventListener('hidden', stopAllAudio);
+    
+        let bubbleGame = {
+        score: 0,
+        bubbles: [],
+        interval: null,
+        colors: ['#ff6666', '#66ff66', '#6666ff', '#ffff66']
+    };
+    
+    function createBubble() {
+        const bubble = document.createElement('div');
+        const size = Math.random() * 80 + 20;
+        const x = Math.random() * (document.getElementById('gameArea').offsetWidth - size);
+        
+        bubble.className = 'bubble';
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = x + 'px';
+        bubble.style.bottom = '-100px';
+        bubble.style.background = `radial-gradient(circle at 30% 30%, 
+            rgba(255,255,255,0.8), 
+            ${bubbleGame.colors[Math.floor(Math.random() * bubbleGame.colors.length)]}80)`;
+    
+        bubble.addEventListener('click', popBubble);
+        document.getElementById('gameArea').appendChild(bubble);
+        bubbleGame.bubbles.push(bubble);
+    
+        const floatAnimation = bubble.animate([
+            { transform: `translateY(0) rotate(0deg)` },
+            { transform: `translateY(-${document.getElementById('gameArea').offsetHeight + 200}px) rotate(${360 * Math.random()}deg)` }
+        ], {
+            duration: Math.random() * 3000 + 5000,
+            iterations: 1
+        });
+    
+        floatAnimation.onfinish = () => {
+            bubble.remove();
+            bubbleGame.bubbles = bubbleGame.bubbles.filter(b => b !== bubble);
+        };
+    }
+    
+    function popBubble(e) {
+        const bubble = e.target;
+        createParticles(bubble);
+        bubbleGame.score += Math.floor(parseInt(bubble.style.width));
+        updateBubbleScore();
+        bubble.remove();
+        bubbleGame.bubbles = bubbleGame.bubbles.filter(b => b !== bubble);
+    }
+    
+    function startBubbleGame() {
+        // Reset game
+        bubbleGame.bubbles.forEach(b => b.remove());
+        bubbleGame.bubbles = [];
+        bubbleGame.score = 0;
+        updateBubbleScore();
+        
+        // Clear existing interval
+        if(bubbleGame.interval) clearInterval(bubbleGame.interval);
+        
+        // Start new game
+        bubbleGame.interval = setInterval(createBubble, 1000);
+    }
+    
+    function updateBubbleScore() {
+        const scoreElement = document.getElementById('bubbleScore');
+        scoreElement.textContent = bubbleGame.score;
+        scoreElement.classList.add('pop-animation');
+        setTimeout(() => {
+            scoreElement.classList.remove('pop-animation');
+        }, 200);
+    }
+    
+    // Ajouter dans la fonction showContent
+    function showContent(contentId) {
+        // Stop all games and clear intervals
+        if(contentId !== 'animation') cancelAnimationFrame(animationFrame);
+        if(contentId !== 'bubble' && bubbleGame.interval) {
+            clearInterval(bubbleGame.interval);
+            bubbleGame.bubbles.forEach(b => b.remove());
+            bubbleGame.bubbles = [];
+        }
+        
+        // Masquer tous les contenus
+        document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
+        document.querySelector('.game-container').style.display = 'none';
+        
+        // Afficher le contenu sélectionné
+        if(contentId === 'animation') {
+            document.querySelector('.game-container').style.display = 'flex';
+            restartGame();
+        } else {
+            document.getElementById(contentId).style.display = 'block';
+        }
+    }
+
+
+        // Logique du jeu
+        let currentPlayer = 1;
+        let scores = [0, 0];
+        const MAX_SCORE = 30; // Score maximum pour gagner
+        const dice = document.getElementById('dice');
+        const players = document.querySelectorAll('.player');
+
+        // Angles de rotation pour chaque face du dé
+        const faceRotations = {
+            1: { x: 0, y: 0 },
+            2: { x: 180, y: 0 },
+            3: { x: 0, y: -90 },
+            4: { x: 0, y: 90 },
+            5: { x: -90, y: 0 },
+            6: { x: 90, y: 0 }
+        };
+
+        document.getElementById('rollButton').addEventListener('click', () => {
+            const rollButton = document.getElementById('rollButton');
+            rollButton.disabled = true;
+            
+            const result = Math.floor(Math.random() * 6) + 1;
+            const rot = faceRotations[result];
+            
+            // Animation du dé
+            dice.style.transition = 'transform 1s ease-out';
+            dice.style.transform = `rotateX(${rot.x + 360 * 2}deg) rotateY(${rot.y + 360 * 3}deg)`;
+            
+            setTimeout(() => {
+                // Mise à jour de l'affichage
+                document.getElementById('resultValue').textContent = result;
+                
+                // Mise à jour du score
+                scores[currentPlayer - 1] += result;
+                document.getElementById(`score${currentPlayer}`).textContent = scores[currentPlayer - 1];
+                
+                // Vérification de la victoire
+                if(scores[currentPlayer - 1] >= MAX_SCORE) {
+                    alert(`Joueur ${currentPlayer} gagne !`);
+                    resetGame();
+                    return;
+                }
+                
+                // Changement de joueur
+                players.forEach(p => p.classList.remove('active'));
+                currentPlayer = currentPlayer === 1 ? 2 : 1;
+                document.getElementById(`player${currentPlayer}`).classList.add('active');
+                
+                rollButton.disabled = false;
+            }, 1000);
+        });
+
+        function resetGame() {
+            scores = [0, 0];
+            currentPlayer = 1;
+            document.getElementById('score1').textContent = '0';
+            document.getElementById('score2').textContent = '0';
+            players.forEach(p => p.classList.remove('active'));
+            document.getElementById('player1').classList.add('active');
+            dice.style.transform = 'rotateX(0) rotateY(0)';
+        }
+        
+        
+        
+    </script>
+</body>
+</html>
+
+
